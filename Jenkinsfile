@@ -19,18 +19,18 @@ pipeline {
             }
         }
         stage('Run Tests') {
-    steps {
-        sh 'pip install pytest && pytest tests/'
-    }
-    post {
-        success {
-            echo 'Tests passed!'
+            steps {
+                sh 'docker compose run azure-vote-front pytest tests/'
+            }
+            post {
+                success {
+                    echo 'Tests passed!'
+                }
+                failure {
+                    echo 'Tests failed!'
+                }
+            }
         }
-        failure {
-            echo 'Tests failed!'
-        }
-    }
-}
     }
     post {
         always {
