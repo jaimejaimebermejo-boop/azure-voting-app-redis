@@ -1,5 +1,5 @@
 pipeline {
-     agent {
+    agent {
         label 'docker'
     }
     stages {
@@ -12,6 +12,29 @@ pipeline {
             steps {
                 sh 'docker compose build'
             }
+        }
+        stage('Start App') {
+            steps {
+                sh 'docker compose up -d'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                sh 'docker compose run azure-vote-front pytest tests/'
+            }
+            post {
+                success {
+                    echo 'Tests passed!'
+                }
+                failure {
+                    echo 'Tests failed!'
+                }
+            }
+        }
+    }
+    post {
+        always {
+            sh 'docker compose down'
         }
     }
 }
