@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Run Tests') {
             steps {
-                sh 'docker compose run azure-vote-front pytest tests/'
+                sh 'docker compose run --rm azure-vote-front pytest tests/'
             }
             post {
                 success {
