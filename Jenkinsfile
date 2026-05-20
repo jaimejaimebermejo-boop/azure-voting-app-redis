@@ -29,7 +29,7 @@ pipeline {
         stage('Grype Scan') {
             steps {
                 grypeScan scanDest: 'registry:jbdelpozo2/jenkins-course:latest',
-                    repFileName: 'grype-report.csv',
+                    repName: 'grype-report.csv',
                     autoInstall: true
             }
             post {
