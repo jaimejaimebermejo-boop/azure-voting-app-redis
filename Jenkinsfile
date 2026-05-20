@@ -1,19 +1,20 @@
 pipeline {
-    agent {
-        label 'docker'
-    }
+    agent none
     stages {
         stage('Verify Branch') {
+            agent { label 'docker' }
             steps {
                 echo "$GIT_BRANCH"
             }
         }
         stage('Docker Build') {
+            agent { label 'docker' }
             steps {
                 sh 'docker compose build'
             }
         }
         stage('Docker Push') {
+            agent { label 'docker' }
             steps {
                 echo "Running in $WORKSPACE"
                 dir("$WORKSPACE/azure-vote") {
@@ -27,6 +28,7 @@ pipeline {
             }
         }
         stage('Deploy to QA') {
+            agent { label 'built-in' }
             when {
                 branch 'master'
             }
@@ -35,6 +37,7 @@ pipeline {
             }
         }
         stage('Approve Deploy to Production') {
+            agent { label 'built-in' }
             when {
                 branch 'master'
             }
@@ -43,6 +46,7 @@ pipeline {
             }
         }
         stage('Deploy to Production') {
+            agent { label 'built-in' }
             when {
                 branch 'master'
             }
