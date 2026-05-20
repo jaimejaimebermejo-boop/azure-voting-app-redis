@@ -26,5 +26,17 @@ pipeline {
                 }
             }
         }
+        stage('Grype Scan') {
+            steps {
+                grypeScan scanDest: 'registry:jbdelpozo2/jenkins-course:latest',
+                    repFileName: 'grype-report.csv',
+                    autoInstall: true
+            }
+            post {
+                always {
+                    recordIssues(tools: [grype(pattern: 'grype-report.csv')])
+                }
+            }
+        }
     }
 }
