@@ -26,15 +26,25 @@ pipeline {
                 }
             }
         }
-        stage('Grype Scan') {
-            steps {
-                grypeScan scanDest: 'registry:jbdelpozo2/jenkins-course:latest',
-                    repName: 'grype-report.csv',
-                    autoInstall: true
-            }
-            post {
-                always {
-                    recordIssues(tools: [grype(pattern: 'grype-report.csv')])
+        stage('Container Scanning') {
+            parallel {
+                stage('Run Grype') {
+                    steps {
+                        grypeScan scanDest: 'registry:jbdelpozo2/jenkins-course:latest',
+                            repName: 'grype-report.csv',
+                            autoInstall: true
+                    }
+                    post {
+                        always {
+                            recordIssues(tools: [grype(pattern: 'grype-report.csv')])
+                        }
+                    }
+                }
+                stage('Additional Scan') {
+                    steps {
+                        sleep 10
+                        echo 'Additional scan complete'
+                    }
                 }
             }
         }
