@@ -1,5 +1,5 @@
 pipeline {
-     agent {
+    agent {
         label 'docker'
     }
     stages {
@@ -11,6 +11,44 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh 'docker compose build'
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                echo "Running in $WORKSPACE"
+                dir("$WORKSPACE/azure-vote") {
+                    script {
+                        docker.withRegistry('', 'dockerhub') {
+                            def image = docker.build("jbdelpozo2/jenkins-course:latest")
+                            image.push()
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy to QA') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh 'kubectl apply -f azure-vote-all-in-one-redis.yaml'
+            }
+        }
+        stage('Approve Deploy to Production') {
+            when {
+                branch 'master'
+            }
+            steps {
+                input message: 'Deploy to production?'
+            }
+        }
+        stage('Deploy to Production') {
+            when {
+                branch 'master'
+            }
+            steps {
+                echo 'Deploying to production...'
+                sh 'kubectl apply -f azure-vote-all-in-one-redis.yaml'
             }
         }
     }
